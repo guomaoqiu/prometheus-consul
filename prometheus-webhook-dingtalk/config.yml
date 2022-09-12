@@ -1,0 +1,34 @@
+## Request timeout
+# timeout: 5s
+
+## Uncomment following line in order to write template from scratch (be careful!)
+#no_builtin_template: false
+
+## Customizable templates path
+#templates:
+#     - /config/dingding.tmpl
+templates:
+  - /config/dingding.tmpl
+## You can also override default template using `default_message`
+## The following example to use the 'legacy' template from v0.3.0
+#default_message:       
+#  title: '{{ template "legacy.title" . }}'
+#  text: '{{ template "legacy.content" . }}'
+## Targets, previously was known as "profiles"
+#    text: '{{ template "_dingtalk.link.content" . }}'
+targets:
+  webhook1:
+    url: https://oapi.dingtalk.com/robot/send?access_token=92268cd2c48db0ec2a10a753213dda6a11e4d54ea8fdbce356f217fa44925a7f
+    secret: 填写你的机器人secret 
+  webhook-ide:
+    url: https://oapi.dingtalk.com/robot/send?access_token=92268cd2c48db0ec2a10a753213dda6a11e4d54ea8fdbce356f217fa44925a7f
+    secret: 填写你的机器人secret 
+
+  webhook-stage:
+    url: https://oapi.dingtalk.com/robot/send?access_token=9d7172785d72f50ab335367bd7db8cb013073f62bd0fd7bfc9605020a6a4b95c
+    secret: 
+    secret: 填写你的机器人secret 
+
+  webhook-Pet:
+    url: https://oapi.dingtalk.com/robot/send?access_token=89b881f5798ec7cdff1538ecf3a7001dd30d19c7e5281e5e8329cb1e243b813e
+    secret: 填写你的机器人secret 

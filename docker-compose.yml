@@ -1,0 +1,98 @@
+version: '3.7'
+
+services:
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - /data/prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle' 
+    ports:
+      - 9090:9090
+    links:
+      - alertmanager:alertmanager
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 500M
+
+  alertmanager:
+    image: prom/alertmanager
+    ports:
+      - 9093:9093
+    volumes:
+      - ./alertmanager/:/etc/alertmanager/
+    restart: always
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 500M
+
+
+  grafana:
+    image: grafana/grafana:8.4.0
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - /data/grafana-data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 500M
+
+
+
+  webhook:
+    image: timonwong/prometheus-webhook-dingtalk
+    depends_on:
+      - prometheus
+    volumes:
+      - ./prometheus-webhook-dingtalk/config.yml:/config/config.yml
+      - ./prometheus-webhook-dingtalk/dingding.tmpl:/config/dingding.tmpl
+    ports:
+      - 9060:8060
+    command:
+      - '--web.listen-address=:8060'
+      - '--config.file=/config/config.yml'
+      - '--web.enable-ui'
+      - '--web.enable-lifecycle'
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 500M
+
+  alertmanager-dashboard:
+    image: ghcr.io/prymitive/karma:latest
+    ports:
+      - 9094:8080
+    restart: always
+    environment:
+      - ALERTMANAGER_URI=http://192.168.18.178:9093
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 500M
+
+

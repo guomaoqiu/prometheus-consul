@@ -1,0 +1,2 @@
+
+look: https://blog.sctux.com/2022/09/12/Prometheus-Consul%E5%AE%9E%E7%8E%B0%E4%BC%81%E4%B8%9A%E7%BA%A7%E5%AE%BF%E4%B8%BB%E6%9C%BA-%E5%AE%B9%E5%99%A8%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6/

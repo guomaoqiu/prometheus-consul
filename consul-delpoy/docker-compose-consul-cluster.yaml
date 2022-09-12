@@ -1,0 +1,65 @@
+version: '2'
+services:
+  consul-server1:
+    image: harbor-offline.leeoom.com/base/consul:latest
+    network_mode: consul-network
+    container_name: consul-server1
+    restart: always
+    command: agent -server -client=0.0.0.0 -bootstrap-expect=3 -node=consul-server1  -bind=0.0.0.0  -config-dir=/consul/config
+    volumes:
+      - /data/consul/consul-server1/data:/consul/data
+      - /data/consul/consul-server1/config:/consul/config
+
+  consul-server2:
+    image: harbor-offline.leeoom.com/base/consul:latest
+    network_mode: consul-network
+    container_name: consul-server2
+    restart: always
+    command: agent -server -client=0.0.0.0 -retry-join=consul-server1 -node=consul-server2  -bind=0.0.0.0   -config-dir=/consul/config
+    volumes:
+      - /data/consul/consul-server2/data:/consul/data
+      - /data/consul/consul-server2/config:/consul/config
+    depends_on:
+      - consul-server1
+
+  consul-server3:
+    image: harbor-offline.leeoom.com/base/consul:latest
+    network_mode: consul-network
+    container_name: consul-server3
+    restart: always
+    command: agent -server -client=0.0.0.0 -retry-join=consul-server1 -node=consul-server3  -bind=0.0.0.0   -config-dir=/consul/config
+    volumes:
+      - /data/consul/consul-server3/data:/consul/data
+      - /data/consul/consul-server3/config:/consul/config
+    depends_on:
+      - consul-server1
+
+  consul-client1:
+    image: harbor-offline.leeoom.com/base/consul:latest
+    network_mode: consul-network
+    container_name: consul-client1
+    restart: always
+    ports:
+      - 8500:8500
+    command: agent -client=0.0.0.0 -retry-join=consul-server1 -ui -node=consul-client1  -bind=0.0.0.0   -config-dir=/consul/config
+    volumes:
+      - /data/consul/consul-client1/data:/consul/data
+      - /data/consul/consul-client1/config:/consul/config
+    depends_on:
+      - consul-server2
+      - consul-server3
+
+  consul-client2:
+    image: harbor-offline.leeoom.com/base/consul:latest
+    network_mode: consul-network
+    container_name: consul-client2
+    restart: always
+    ports:
+      - 8501:8500
+    command: agent -client=0.0.0.0 -retry-join=consul-server1 -ui -node=consul-client2  -bind=0.0.0.0  -config-dir=/consul/config
+    volumes:
+      - /data/consul/consul-client2/data:/consul/data
+      - /data/consul/consul-client2/config:/consul/config
+    depends_on:
+      - consul-server2
+      - consul-server3

@@ -1,0 +1,38 @@
+global: # 全局配置
+  resolve_timeout: 10m # 超时时间 默认10m
+inhibit_rules:
+  - source_match:      ## 源报警规则
+      alertname: 'critical'
+    target_match:
+      alertname: 'warning'
+    equal: ['alertname']  # 通过alertname去抑制
+route:
+  receiver: default-receiver
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
+  group_by: ['alertname'] 
+  routes:
+  - receiver: webhook-ide
+    matchers:
+    - group = IDE  # 通过prometehus alert rule 查询出来的结果必须包含 group字段，否则该条报警不能发送出来
+  - receiver: webhook-stage
+    matchers:
+    - group = Stage
+  - receiver: webhook-Pet
+    matchers:
+    - group = Pet
+receivers:
+- name: default-receiver # 这里不需要设置，需要精确匹配到每一条告规则 ，但是这里必须要存在，上面强调了必须要有一个默认的receiver
+- name: webhook-ide
+  webhook_configs: # webhook告警配置
+  - url: 'http://192.168.18.178:9060/dingtalk/webhook-ide/send'
+    send_resolved: true
+- name: webhook-stage
+  webhook_configs: # webhook告警配置
+  - url: 'http://192.168.18.178:9060/dingtalk/webhook-stage/send'
+    send_resolved: true
+- name: webhook-Pet
+  webhook_configs: # webhook告警配置
+  - url: 'http://192.168.18.178:9060/dingtalk/webhook-Pet/send'
+    send_resolved: true
