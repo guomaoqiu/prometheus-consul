@@ -2,6 +2,7 @@ version: '3.7'
 services:
   node-exporter:
     image: prom/node-exporter:latest
+    container_name: node-exporter
     network_mode: host
     pid: host
     volumes:
@@ -25,6 +26,7 @@ services:
 
   cadvisor-exporter:
     image: gcr.io/cadvisor/cadvisor:v0.45.0
+    container_name: cadvisor-exporter
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
@@ -43,5 +45,5 @@ services:
       mode: global
       resources:
         limits:
-          cpus: "2.0"
+          cpus: "1.0"
           memory: 500M
