@@ -1,0 +1,47 @@
+version: '3.7'
+services:
+  node-exporter:
+    image: prom/node-exporter:latest
+    network_mode: host
+    pid: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+      - /:/host:ro,rslave
+    command:
+      - '--path.rootfs=/host'
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - --web.disable-exporter-metrics
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)(1410|/)"
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 500M
+
+  cadvisor-exporter:
+    image: gcr.io/cadvisor/cadvisor:v0.45.0
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    command:
+      - "-docker_only=true"
+      - "-housekeeping_interval=10s"
+      - "-docker_only=true"
+      - "--allow_dynamic_housekeeping=false"
+      - "--storage_duration=20s"
+    ports:
+      - 9105:8080
+    restart: always
+    deploy:
+      mode: global
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 500M
